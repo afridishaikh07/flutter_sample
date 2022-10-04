@@ -92,7 +92,10 @@ class HomeCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
-        decoration: BoxDecoration(color: Colors.black12),
+        decoration: BoxDecoration(
+          color: Colors.blueAccent.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
