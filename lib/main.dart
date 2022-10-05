@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Rest API Integration',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -42,57 +43,17 @@ class HomeScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         ModelRes model =
                             ModelRes.fromJson(snapshot.data[index]);
-                        return HomeCard(
-                          id: model.id!,
-                          isCompleted: model.completed!,
-                          title: model.title!,
+                        return ListTile(
+                          contentPadding: const EdgeInsets.all(5),
+                          title: Text(model.title!),
+                          trailing: model.completed!
+                              ? const Icon(Icons.done, color: Colors.green)
+                              : const Icon(
+                                  Icons.check_box_outline_blank_outlined),
                         );
                       },
                     );
             }),
-      ),
-    );
-  }
-}
-
-class HomeCard extends StatelessWidget {
-  final String title;
-  final bool isCompleted;
-  final int id;
-
-  const HomeCard(
-      {required this.id, required this.title, required this.isCompleted});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.blueAccent.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                    color: Colors.green,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w900),
-              ),
-              Text(
-                isCompleted ? 'Completed' : "Pending",
-                style: TextStyle(
-                    color: isCompleted ? Colors.red : Colors.blueAccent,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w900),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
