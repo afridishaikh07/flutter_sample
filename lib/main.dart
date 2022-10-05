@@ -9,8 +9,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,56 +23,39 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isLoading = true;
-
-  List<ModelRes> models = [];
-
-  @override
-  void initState() {
-    getHttp();
-    super.initState();
-  }
-
   getHttp() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      var response =
-          await Dio().get('https://jsonplaceholder.typicode.com/todos');
-      print(response);
-      models =
-          (response.data as List).map((e) => ModelRes.fromJson(e)).toList();
-    } catch (e) {
-      print(e);
-    }
-    setState(() {
-      isLoading = false;
-    });
+    var response =
+        await Dio().get('https://jsonplaceholder.typicode.com/todos');
+    return response.data;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : ListView.builder(
-                itemBuilder: (context, index) => HomeCard(
-                  id: models[index].id!,
-                  isCompleted: models[index].completed!,
-                  title: models[index].title!,
-                ),
-                itemCount: models.length,
-              ),
+        child: FutureBuilder(
+            future: getHttp(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return snapshot.connectionState == ConnectionState.waiting
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        ModelRes model =
+                            ModelRes.fromJson(snapshot.data[index]);
+                        return HomeCard(
+                          id: model.id!,
+                          isCompleted: model.completed!,
+                          title: model.title!,
+                        );
+                      },
+                    );
+            }),
       ),
     );
   }
@@ -85,7 +66,8 @@ class HomeCard extends StatelessWidget {
   final bool isCompleted;
   final int id;
 
-  HomeCard({required this.id, required this.title, required this.isCompleted});
+  const HomeCard(
+      {required this.id, required this.title, required this.isCompleted});
 
   @override
   Widget build(BuildContext context) {
