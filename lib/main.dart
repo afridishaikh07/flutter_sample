@@ -32,29 +32,30 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: FutureBuilder(
-            future: getHttp(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              return snapshot.connectionState == ConnectionState.waiting
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                        ModelRes model =
-                            ModelRes.fromJson(snapshot.data[index]);
-                        return ListTile(
-                          contentPadding: const EdgeInsets.all(5),
-                          title: Text(model.title!),
-                          trailing: model.completed!
-                              ? const Icon(Icons.done, color: Colors.green)
-                              : const Icon(
-                                  Icons.check_box_outline_blank_outlined),
-                        );
-                      },
-                    );
-            }),
-      ),
+      appBar: AppBar(title: const Text("ToDo App")),
+      body: FutureBuilder(
+          future: getHttp(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            return snapshot.connectionState == ConnectionState.waiting
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.separated(
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const Divider();
+                    },
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      ModelRes model = ModelRes.fromJson(snapshot.data[index]);
+                      return ListTile(
+                        contentPadding: const EdgeInsets.all(5),
+                        title: Text(model.title!),
+                        leading: model.completed!
+                            ? const Icon(Icons.done, color: Colors.green)
+                            : const Icon(
+                                Icons.check_box_outline_blank_outlined),
+                      );
+                    },
+                  );
+          }),
     );
   }
 }
